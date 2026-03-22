@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { createScene } from "../three/scene";
@@ -6,11 +6,18 @@ import { createCameras } from "../three/cameras";
 import { addHelpers } from "../three/helpers";
 import { useSceneStore } from "../store/UseSceneStore";
 import { getCameraById } from "../three/cameras";
+import { use } from "react";
 
 export default function SceneCanvas() {
   const mountRef = useRef();
+  const sceneData = useSceneStore((state) => state.scene);
+  const [sceneInitialised, setSceneInitialised] = useState(false);
 
   useEffect(() => {
+    if (!sceneData || !sceneData.cameras?.length) return;
+
+    console.log("Initializing scene with data:", sceneData);
+
     const scene = createScene();
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -25,8 +32,6 @@ export default function SceneCanvas() {
     );
     editorCamera.position.set(5, 5, 5);
     editorCamera.lookAt(0, 0, 0);
-
-    const { scene: sceneData } = useSceneStore.getState();
 
     console.log(sceneData);
 
@@ -58,7 +63,12 @@ export default function SceneCanvas() {
         mountRef.current.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [sceneInitialised]);
+
+  useEffect(() => {
+    if (!sceneData || !sceneData.cameras?.length) return;
+    setSceneInitialised(true);
+  }, [sceneData]);
 
   useEffect(() => {
     const unsubscribe = useSceneStore.subscribe((state) => {
@@ -71,7 +81,12 @@ export default function SceneCanvas() {
       scene.cameras.forEach((camData) => {
         const cam = getCameraById(camData.id);
 
-        console.log("Updating camera in subscribe, ID:", camData.id, "Camera from map:", cam);
+        console.log(
+          "Updating camera in subscribe, ID:",
+          camData.id,
+          "Camera from map:",
+          cam,
+        );
         if (!cam) return;
 
         // ✅ Full sync

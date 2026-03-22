@@ -25,6 +25,17 @@ export default function CameraList() {
           {cam.id}
         </div>
       ))}
+      <div
+          onClick={() =>{} }
+          style={{
+            marginTop: "10px",
+            padding: "5px",
+            cursor: "pointer",
+            background: "green"
+          }}
+        >
+          Add Camera
+        </div>
     </div>
   );
 }

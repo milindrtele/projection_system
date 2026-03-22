@@ -14,6 +14,7 @@ export function createCameras(scene, sceneData = { cameras: [] }) {
 
     cam.position.set(...camData.position);
     cam.rotation.set(...camData.rotation);
+    cam.lookAt(0, 0, 0);
 
     cameraMap[camData.id] = cam;
     scene.add(cam);
