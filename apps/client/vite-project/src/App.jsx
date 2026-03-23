@@ -1,11 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import "./App.css";
 
 export default function App() {
   const canvasRef = useRef();
   const params = new URLSearchParams(window.location.search);
-  const clientId = params.get("camId") || "cam1";
+  const clientId = params.get("camId");
+  const [isCamAvailable, setIsCamAvailable] = useState(true);
 
   console.log("Client:", clientId);
 
@@ -47,11 +48,13 @@ export default function App() {
     scene.add(plane);
 
     // socket
-    const socket = new WebSocket("ws://localhost:3000");
+    const socket = new WebSocket("ws://192.168.1.68:3000");
 
     function loadScene(sceneData) {
 
       const cam = sceneData.cameras.find((c) => c.id === clientId);
+
+      if (!cam) { setIsCamAvailable(false); return; };
 
       camera.position.set(...cam.position);
       camera.rotation.set(...cam.rotation);
@@ -81,7 +84,11 @@ export default function App() {
   }, []);
   return (
     <>
-      <canvas ref={canvasRef}></canvas>
+      {!isCamAvailable ? (
+        <div className="error">
+          Camera with ID "{clientId}" not found in the scene.
+        </div>
+      ) : <canvas ref={canvasRef}></canvas>}
     </>
   );
 }
