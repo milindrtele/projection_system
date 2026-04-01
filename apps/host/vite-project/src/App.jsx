@@ -36,7 +36,7 @@ export default function App() {
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      
+
       {/* 3D View */}
       <div style={{ flex: 1 }}>
         <SceneCanvas />
@@ -48,7 +48,6 @@ export default function App() {
         <CameraControls />
         <CameraList />
       </div>
-
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { WebSocketServer } from "ws";
 import { getScene, updateScene } from "./state.js";
 
-const wss = new WebSocketServer({ port: 3000 });
+const wss = new WebSocketServer({ port: 3000, host: "0.0.0.0" });
 
 let clients = [];
 
@@ -12,8 +12,8 @@ wss.on("connection", (ws) => {
   ws.send(
     JSON.stringify({
       type: "scene:init",
-      data: getScene()
-    })
+      data: getScene(),
+    }),
   );
 
   ws.on("message", (message) => {
@@ -25,7 +25,10 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    console.log("camera", msg.type === "scene:update" ? msg.data.cameras : "N/A");
+    console.log(
+      "camera",
+      msg.type === "scene:update" ? msg.data.cameras : "N/A",
+    );
 
     if (msg.type === "scene:update") {
       try {
